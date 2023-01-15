@@ -1,35 +1,54 @@
 #include "./../include/processB_utilities.h"
+#include <common.h>
+int main(){
+// Initialize UI
+init_console_ui();
+int center_of_circle[2];
+int mem_size = WIDTH * HEIGHT * sizeof(rgb_pixel_t); //define shared memory size
 
-int main(int argc, char const *argv[])
+int share_mem = shm_open("/memory", O_CREAT | O_RDWR, 0666);//open share memory
+if (share_mem < 0) //in case of failure
 {
-    // Utility variable to avoid trigger resize event on launch
-    int first_resize = TRUE;
+    perror("Cannot open shared memory!");
+    exit(1);
+}
+rgb_pixel_t* rgb_matrix = (rgb_pixel_t*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE, MAP_SHARED, share_mem, 0); //mapping shared memory
+if (rgb_matrix == MAP_FAILED) //in case of failure
+{
+    perror("Cannot map shared memory!");
+    exit(1);
+}
+sem_t* semaphor = sem_open(SEM_PATH, 1);//opening semaphore
+if (semaphor == SEM_FAILED)
+{
+    perror("Cannot open semaphore!");
+    exit(1);
+}
+while (TRUE)
+{
 
-    // Initialize UI
-    init_console_ui();
+    int cmd = getch(); //getting input from keyboard
 
-    // Infinite loop
-    while (TRUE) {
-
-        // Get input in non-blocking mode
-        int cmd = getch();
-
-        // If user resizes screen, re-draw UI...
-        if(cmd == KEY_RESIZE) {
-            if(first_resize) {
-                first_resize = FALSE;
-            }
-            else {
-                reset_console_ui();
-            }
+    if (cmd == KEY_RESIZE) //if widnow resize
+    {
+        if (first_resize)
+        {
+            first_resize = FALSE;
         }
-
-        else {
-            mvaddch(LINES/2, COLS/2, '0');
-            refresh();
+        else
+        {
+            reset_console_ui();
         }
     }
 
+    else
+    {
+        find_center(rgb_matrix, center_of_circle)
+        mvaddch(center_of_circle[0], center_of_circle[1], '0');
+    }
+}
+    close(share_mem);
+    shm_unlink("/memory");
     endwin();
     return 0;
 }
