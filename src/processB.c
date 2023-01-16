@@ -52,7 +52,7 @@ int main()
         else
         {
             find_center(rgb_matrix, center_of_circle);
-            mvaddch(center_of_circle[0], center_of_circle[1], '0');
+            mvaddch(center_of_circle[1]/RADIUS, center_of_circle[0]/RADIUS, '0');
         }
     }
     close(share_mem);

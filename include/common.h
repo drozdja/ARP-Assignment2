@@ -11,6 +11,7 @@
 #define WIDTH 1600
 #define HEIGHT 600
 #define DEPTH 4
+#define RADIUS 20
 
 #define SHMOBJ_PATH "/shm_AOS"
 #define SEM_PATH "/sem_AOS_1"
@@ -18,7 +19,7 @@
 void draw_circle_bmp(bmpfile_t *bmp, int x0, int y0)
 {
     // Configuration about the circle:
-    int radius = 40;
+    int radius = RADIUS;
     rgb_pixel_t pixel = {255, 0, 0, 0};  // Color of the circle (BGRA)
     rgb_pixel_t center = {0, 0, 255, 0}; // Color of the center (BGRA)
 

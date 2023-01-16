@@ -39,7 +39,7 @@ int init(int mem_size)
     }
 
     // Opening semaphore
-    sem_t *sem = sem_open(SEM_PATH, O_CREAT, S_IRUSR | S_IWUSR, 1);
+    sem = sem_open(SEM_PATH, O_CREAT, S_IRUSR | S_IWUSR, 1);
     {
         if (sem == SEM_FAILED)
         {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     init_console_ui();
 
     set_circle();
-    draw_circle_bmp(bmp, circle.x, circle.y);
+    draw_circle_bmp(bmp, circle.x/RADIUS, circle.y/RADIUS);
     save_bmp(bmp, ptr);
     
     if (sem_post(sem) < 0)
@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
             {
                 if (check_button_pressed(print_btn, &event))
                 {
+                    bmp_save(bmp, "./out/snapshot.bmp");
                     mvprintw(LINES - 1, 1, "Print button pressed");
                     refresh();
                     sleep(1);
@@ -135,7 +136,7 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            draw_circle_bmp(bmp, circle.x, circle.y);
+            draw_circle_bmp(bmp, circle.x * RADIUS, circle.y * RADIUS);
             save_bmp(bmp, ptr);
             if (sem_post(sem) < 0)
             {
