@@ -1,5 +1,5 @@
-# ARP-Hoist-Assignment
-Solution to the first *Advanced and Robot Programming* (ARP) assignment.
+# ARP-Assignment2
+Solution to the second *Advanced and Robot Programming* (ARP) assignment.
 
 Authors:
 JT2-Wimir
