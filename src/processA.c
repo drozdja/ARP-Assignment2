@@ -7,12 +7,23 @@ sem_t *sem;
 rgb_pixel_t *ptr;
 bmpfile_t *bmp;
 FILE *fd_log;
+char log_msg[200];
+
+int logging(char *log)
+{
+    fd_log = fopen("out/processA.log", "a+");
+    fprintf(fd_log, "%ld; processA; %s\n", time(NULL), log); // adding log msg to logfile
+    fflush(fd_log);
+    fclose(fd_log);
+}
 
 int init(int mem_size)
 {
     bmp = bmp_create(WIDTH, HEIGHT, DEPTH); //create bitmap
     if (bmp == NULL) //in case of failure
     {
+        sprintf(log_msg, "Error creating bitmap");
+        logging(log_msg);
         perror("Error creating bitmap");
         return -1;
     }
@@ -20,6 +31,8 @@ int init(int mem_size)
     int shmfd = shm_open(SHMOBJ_PATH, O_CREAT | O_RDWR, DEFFILEMODE); //opening shared memory
     if (shmfd < 0)//in case of failure
     {
+        sprintf(log_msg, "Error opening shared memory");
+        logging(log_msg);
         perror("Error opening shared memory");
         return -1;
     }
@@ -27,6 +40,8 @@ int init(int mem_size)
     int trunc = ftruncate(shmfd, mem_size); //configuring size of shared memory
     if (trunc < 0) //in case of failure
     {
+        sprintf(log_msg, "Error configuring shared memory size");
+        logging(log_msg);
         perror("Error configuring shared memory size");
         return -1;
     }
@@ -35,6 +50,8 @@ int init(int mem_size)
     ptr = (rgb_pixel_t *)mmap(NULL, mem_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0);
     if (ptr == MAP_FAILED) //in case of failure
     {
+        sprintf(log_msg, "Error mapping shared memory");
+        logging(log_msg);
         perror("Error mapping shared memory");
         return -1;
     }
@@ -44,19 +61,13 @@ int init(int mem_size)
     {
         if (sem == SEM_FAILED) //in case of failure
         {
+            sprintf(log_msg, "Error opening semaphore");
+            logging(log_msg);
             perror("Error opening semaphore");
             return -1;
         }
     }
     return 0;
-}
-
-int logging(char *log)
-{
-    fd_log = fopen("out/processA.log", "a+");
-    fprintf(fd_log, "%ld; processA; %s", time(NULL), log); // adding log msg to logfile
-    fflush(fd_log);
-    fclose(fd_log);
 }
 
 int close_all(int mem_size) //closingshared memory and semaphore
@@ -69,13 +80,16 @@ int close_all(int mem_size) //closingshared memory and semaphore
 
 int main(int argc, char *argv[])
 {
-    char log_msg[200];
     int mem_size = WIDTH * HEIGHT * sizeof(rgb_pixel_t); //shared memory size
     if (init(mem_size) != 0) //in case of failure
     {
+        sprintf(log_msg, "Initialization failed");
+        logging(log_msg);
         perror("Initialization failed");
         close_all(mem_size);
     }
+    sprintf(log_msg, "ProcessA started");
+        logging(log_msg);
 
     // Utility variable to avoid trigger resize event on launch
     int first_resize = TRUE;
@@ -89,6 +103,8 @@ int main(int argc, char *argv[])
     
     if (sem_post(sem) < 0)
     {
+        sprintf(log_msg, "Semaphore error");
+        logging(log_msg);
         perror("Semaphore error");
     }
 
@@ -143,6 +159,8 @@ int main(int argc, char *argv[])
             bmp = bmp_create(WIDTH, HEIGHT, DEPTH);
             if (bmp == NULL)
             {
+                sprintf(log_msg, "Error creating bitmap");
+                logging(log_msg);
                 perror("Error creating bitmap");
                 break;
             }
@@ -151,11 +169,15 @@ int main(int argc, char *argv[])
             save_bmp(bmp, ptr);
             if (sem_post(sem) < 0)
             {
+                sprintf(log_msg, "Semaphore error");
+                logging(log_msg);
                 perror("Semaphore error");
             }
         }
     }
     endwin();
     close_all(mem_size);
+    sprintf(log_msg, "ProcessA terminated");
+        logging(log_msg);
     return 0;
 }
