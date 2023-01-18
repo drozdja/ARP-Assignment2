@@ -6,6 +6,7 @@ char chared_data[10];
 sem_t *sem;
 rgb_pixel_t *ptr;
 bmpfile_t *bmp;
+FILE *fd_log;
 
 int init(int mem_size)
 {
@@ -50,6 +51,14 @@ int init(int mem_size)
     return 0;
 }
 
+int logging(char *log)
+{
+    fd_log = fopen("out/processA.log", "a+");
+    fprintf(fd_log, "%ld; processA; %s", time(NULL), log); // adding log msg to logfile
+    fflush(fd_log);
+    fclose(fd_log);
+}
+
 int close_all(int mem_size) //closingshared memory and semaphore
 {
     shm_unlink(SHMOBJ_PATH);
@@ -60,7 +69,7 @@ int close_all(int mem_size) //closingshared memory and semaphore
 
 int main(int argc, char *argv[])
 {
-
+    char log_msg[200];
     int mem_size = WIDTH * HEIGHT * sizeof(rgb_pixel_t); //shared memory size
     if (init(mem_size) != 0) //in case of failure
     {
@@ -111,6 +120,8 @@ int main(int argc, char *argv[])
                 {
                     bmp_save(bmp, "./out/snapshot.bmp"); //saving snapshot
                     mvprintw(LINES - 1, 1, "Print button pressed");
+                    sprintf(log_msg, "Print button pressed");
+                    logging(log_msg);
                     refresh();
                     sleep(1);
                     for (int j = 0; j < COLS - BTN_SIZE_X - 2; j++)

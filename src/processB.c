@@ -4,15 +4,15 @@
 // Utility variable to avoid trigger resize event on launch
 int first_resize = TRUE;
 int center_of_circle[2]; // declaring int array
-// int logging(char* log)
-//{
-//   char array[200];
-//   int fd_log = open(logs_file, O_RDWR);
-//   memset(array, 0, sizeof(array));
-//  sprintf(array, "%ld;%s;%s", time(NULL), "logs_file", log);
-//  write(fd_log, array, strlen(array) + 1);
-//  close(fd_log);
-//}
+FILE *fd_log;
+
+int logging(char *log)
+{
+    fd_log = fopen("out/processB.log", "a+");
+    fprintf(fd_log, "Time: %ld; Msg: %s", time(NULL), log); // adding log msg to logfile
+    fflush(fd_log);
+    fclose(fd_log);
+}
 
 int create_shared_memory()
 {                                                                         // function that creates shared memory
@@ -38,6 +38,7 @@ rgb_pixel_t *create_matrix(int sh) // function that maps matrix
 }
 int main()
 {
+    char log_msg[200];
     // Initialize UI
     init_console_ui();
     sem_t *semaphor = sem_open(SEM_PATH, 1); // opening semaphore
@@ -69,7 +70,8 @@ int main()
         {
             find_center(mat, center_of_circle);                                       // calling function
             mvaddch(center_of_circle[1] / RADIUS, center_of_circle[0] / RADIUS, '0'); // show the center
-            // logging("Created center of circle with coordinates: %d, %d", center_of_circle[1] / RADIUS, center_of_circle[0] / RADIUS);
+            sprintf(log_msg, "Created center of circle with coordinates: %d, %d", center_of_circle[1] / RADIUS, center_of_circle[0] / RADIUS);
+            logging(log_msg);
         }
     }
     // closing shared memory and unlinking semaphore

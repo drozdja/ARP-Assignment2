@@ -32,7 +32,7 @@ int spawn(const char *program, char *arg_list[])
 
 int main()
 {
-
+  
   // Opening semaphore:
   sem_t *sem = sem_open(SEM_PATH, O_CREAT, S_IRUSR | S_IWUSR, 1);
   if (sem == SEM_FAILED)

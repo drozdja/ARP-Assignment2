@@ -6,7 +6,8 @@
 #include <sys/shm.h>
 #include <bmpfile.h>
 #include <math.h>
-
+#include <time.h>
+#include <stdio.h>
 
 #define WIDTH 1600
 #define HEIGHT 600
@@ -15,8 +16,6 @@
 
 #define SHMOBJ_PATH "/shm_AOS"
 #define SEM_PATH "/sem_AOS_1"
-
-//functions for circle
 
 void draw_circle_bmp(bmpfile_t *bmp, int x0, int y0)
 {
@@ -51,10 +50,11 @@ void find_center(rgb_pixel_t *matrix, int *pos)
     for(int x = 0; x < WIDTH; x++) {
         int len = 0;
         for(int y = 0; y < HEIGHT; y++) {
-            rgb_pixel_t pixel = matrix[x + y*WIDTH];
+            rgb_pixel_t pixel = matrix[x + y*WIDTH]; // Get the current pixel
             if (pixel.blue + pixel.green + pixel.red < 765) {
-                rgb_pixel_t prev_pixel  = matrix[x + (y-1)*WIDTH];
+                rgb_pixel_t prev_pixel  = matrix[x + (y-1)*WIDTH]; // Get the previous pixel
                 if (prev_pixel.blue == 255 && prev_pixel.green == 255 && prev_pixel.red == 255) {
+                    // Update position
                     pos[0] = x;
                     pos[1] = y;
                 }
@@ -62,12 +62,14 @@ void find_center(rgb_pixel_t *matrix, int *pos)
             }
         }
         if (len > max_len) {
+            // Update the maximum length and reset the count
             max_len = len;
             count = 1;
         }
         else if (len == max_len) count++;
         else break;
     }
+    // Adjust the position values to find the center of the line
     pos[0] = pos[0] - count / 2 - 1;
     pos[1] = pos[1] + max_len / 2 - 1;
 }
