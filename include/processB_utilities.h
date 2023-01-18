@@ -36,4 +36,3 @@ void reset_console_ui() {
     refresh();
 }
 
-
