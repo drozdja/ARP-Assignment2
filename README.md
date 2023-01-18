@@ -1,3 +1,11 @@
+# ARP-Hoist-Assignment
+Solution to the first *Advanced and Robot Programming* (ARP) assignment.
+
+Authors:
+JT2-Wimir
+- Tomasz Maciej Strzesak (5714359)
+- Jan Mikołaj Drozd (5646665)
+
 # ARP-Assignment2
 Base repository for the **second ARP assignment**.
 The project provides you with a base infrastructure for the implementation of the simulated vision system through shared memory, according to the requirements specified in the PDF file of the assignment.
@@ -23,9 +31,25 @@ Now that you have properly installed the library in your system, it's time to us
 2. Compile programs which use the *libbitmap* library by linking the shared library with the ```-lbmp``` command.     
 Example for compiling **circle.c**: ```gcc src/circle.c -lbmp -lm -o bin/circle``` 
 
-## Compiling and running **processA** and **processB**
-The two processes are implemented as UIs through *ncurses* library, therefore you need to compile their source files by linking the shared library via ```-lncurses```. As for the first assignment, exploit the resize event of the windows to get out of situations in which the graphical elements do not properly spawn.
+## Compiling and running
+To compile the program:
+```console
+sudo ./compile.sh
+```
 
-## Executing **circle.c**
-This is a simple example of a program which uses the *libbitmap* library. It generates a 100x100 colored `.bmp` file with user-defined name, depicting a blue circle of given radius. When you execute it, pass the two arguments (file name and radius value) along. Execution example: ```./bin/circle out/test.bmp 20```.
+## Executing 
+```console
+./run.sh
+```
+
+or
+
+```console
+./bin/master
+```
+
+## Repository link
+```
+gh repo clone drozdja/ARP-Assignment2
+```
 
