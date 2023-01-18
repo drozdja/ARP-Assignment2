@@ -39,13 +39,13 @@ sudo ./compile.sh
 
 ## Executing 
 ```console
-./run.sh
+sudo ./run.sh
 ```
 
 or
 
 ```console
-./bin/master
+sudo ./bin/master
 ```
 
 ## Repository link
